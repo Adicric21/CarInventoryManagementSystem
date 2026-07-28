@@ -1,0 +1,73 @@
+{
+  "name": "car-dealership-inventory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A test-driven car dealership inventory system.",
+  "workspaces": [
+    "apps/backend",
+    "apps/frontend"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0",
+    "npm": ">=10.0.0"
+  },
+  "packageManager": "npm@10.9.2",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "concurrently --kill-others-on-fail --names backend,frontend --prefix-colors blue,magenta \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace @car-dealership/backend",
+    "dev:frontend": "npm run dev --workspace @car-dealership/frontend",
+    "build": "npm run build --workspaces --if-present",
+    "build:backend": "npm run build --workspace @car-dealership/backend",
+    "build:frontend": "npm run build --workspace @car-dealership/frontend",
+    "typecheck": "npm run typecheck --workspaces --if-present && npm run typecheck:e2e",
+    "typecheck:e2e": "tsc --project tsconfig.json --noEmit",
+    "test": "npm run test --workspaces --if-present",
+    "test:backend": "npm run test --workspace @car-dealership/backend",
+    "test:frontend": "npm run test --workspace @car-dealership/frontend",
+    "test:watch": "concurrently --kill-others-on-fail --names backend-tests,frontend-tests --prefix-colors blue,magenta \"npm run test:watch --workspace @car-dealership/backend\" \"npm run test:watch --workspace @car-dealership/frontend\"",
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "db:migrate": "npm run db:migrate --workspace @car-dealership/backend",
+    "db:migrate:deploy": "npm run db:migrate:deploy --workspace @car-dealership/backend",
+    "db:migrate:test": "node scripts/migrate-test-database.mjs",
+    "db:seed": "npm run db:seed --workspace @car-dealership/backend",
+    "playwright:install": "playwright install --with-deps chromium",
+    "test:e2e": "npm run db:migrate:test && npm run build:backend && node scripts/run-playwright.mjs acceptance",
+    "screenshots": "npm run db:migrate:test && npm run build:backend && node scripts/run-playwright.mjs screenshots",
+    "clean": "npm run clean --workspaces --if-present",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix --max-warnings=0",
+    "lint:staged": "lint-staged",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.61.1",
+    "@vitest/coverage-v8": "4.1.10",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "husky": "^9.1.7",
+    "lint-staged": "16.4.0",
+    "prettier": "3.8.5",
+    "rimraf": "^6.1.2",
+    "typescript-eslint": "^8.65.0",
+    "vitest": "4.1.10"
+  },
+  "lint-staged": {
+    "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "!(package-lock).json": "prettier --write",
+    "*.{jsonc,md,css,html,yaml,yml}": "prettier --write"
+  }
+}

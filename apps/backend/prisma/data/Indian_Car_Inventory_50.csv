@@ -1,0 +1,51 @@
+Make,Model,Category,Price,Quantity
+Maruti Suzuki,Swift,Hatchback,699000,15
+Maruti Suzuki,Baleno,Hatchback,820000,12
+Maruti Suzuki,Brezza,SUV,980000,10
+Maruti Suzuki,Grand Vitara,SUV,1320000,8
+Tata,Tiago,Hatchback,599000,14
+Tata,Altroz,Hatchback,760000,10
+Tata,Punch,SUV,689000,16
+Tata,Nexon,SUV,899000,12
+Tata,Harrier,SUV,1549000,6
+Tata,Safari,SUV,1699000,5
+Mahindra,XUV 3XO,SUV,799000,10
+Mahindra,Scorpio N,SUV,1399000,8
+Mahindra,Thar,SUV,1199000,7
+Mahindra,XUV700,SUV,1499000,6
+Hyundai,Grand i10 Nios,Hatchback,598000,12
+Hyundai,i20,Hatchback,749000,10
+Hyundai,Venue,SUV,794000,9
+Hyundai,Creta,SUV,1100000,11
+Hyundai,Alcazar,SUV,1499000,5
+Kia,Sonet,SUV,799000,9
+Kia,Seltos,SUV,1119000,8
+Kia,Carens,MPV,1060000,7
+Honda,Amaze,Sedan,809000,8
+Honda,City,Sedan,1190000,6
+Toyota,Glanza,Hatchback,690000,9
+Toyota,Urban Cruiser Hyryder,SUV,1140000,7
+Toyota,Innova Hycross,MPV,1940000,5
+Toyota,Fortuner,SUV,3599000,3
+MG,Comet EV,EV,699000,8
+MG,Astor,SUV,999000,6
+MG,Hector,SUV,1399000,5
+Skoda,Slavia,Sedan,1069000,5
+Skoda,Kushaq,SUV,1089000,6
+Volkswagen,Virtus,Sedan,1156000,5
+Volkswagen,Taigun,SUV,1147000,5
+Renault,Kiger,SUV,615000,7
+Renault,Triber,MPV,629000,8
+Nissan,Magnite,SUV,614000,8
+Jeep,Compass,SUV,1899000,4
+Citroen,C3,Hatchback,631000,6
+Citroen,Basalt,SUV Coupe,799000,5
+BMW,2 Series Gran Coupe,Luxury Sedan,4390000,2
+BMW,X1,Luxury SUV,4990000,2
+Mercedes-Benz,A-Class Limousine,Luxury Sedan,4690000,2
+Mercedes-Benz,GLA,Luxury SUV,5090000,2
+Audi,A4,Luxury Sedan,4699000,2
+Audi,Q3,Luxury SUV,4499000,2
+Volvo,XC60,Luxury SUV,6890000,1
+Lexus,NX350h,Luxury SUV,6840000,1
+BYD,Seal,EV Sedan,4190000,2

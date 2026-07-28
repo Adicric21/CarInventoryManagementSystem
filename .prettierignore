@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+generated/
+*.generated.*
+*.tsbuildinfo
+package-lock.json
+.husky/_/
+.cache/
+.tmp/
+tmp/
+test-results/
+playwright-report/
+blob-report/
