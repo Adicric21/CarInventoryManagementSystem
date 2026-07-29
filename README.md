@@ -253,6 +253,7 @@ sequenceDiagram
 ```
 
 ---
+
 ## My AI Usage
 
 This project was developed with responsible use of AI-assisted software engineering tools. AI was used to accelerate development, improve code quality, and review implementation approaches, while all architectural decisions, business logic, testing, and final integration were performed manually.
@@ -278,9 +279,9 @@ AI assisted with:
 
 ### Reflection
 
-AI significantly accelerated repetitive development tasks and helped explore alternative implementation approaches. 
+AI significantly accelerated repetitive development tasks and helped explore alternative implementation approaches.
 
-Every AI-generated suggestion was carefully reviewed, validated, modified where necessary, and integrated manually. 
+Every AI-generated suggestion was carefully reviewed, validated, modified where necessary, and integrated manually.
 
 All final architectural decisions, production code, testing strategy, and documentation reflect my own engineering judgment and responsibility.
 

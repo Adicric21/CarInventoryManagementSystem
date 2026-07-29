@@ -133,7 +133,9 @@ describe('purchase vehicle', () => {
 
   it('maps repository failures through the shared safe unexpected-error mechanism', async () => {
     const sensitiveDetail = 'database transaction and credentials must remain internal';
-    dependencies.vehicleRepository.purchaseWithActivity.mockRejectedValue(new Error(sensitiveDetail));
+    dependencies.vehicleRepository.purchaseWithActivity.mockRejectedValue(
+      new Error(sensitiveDetail),
+    );
 
     const error = await captureExpectedInventoryError(() =>
       purchaseVehicle.execute(VEHICLE_ID, { quantity: 1 }),
