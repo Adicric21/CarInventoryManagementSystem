@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
   VEHICLE_SORT_FIELDS,
@@ -33,10 +33,15 @@ function expectValidationError(error: unknown): void {
 }
 
 describe('search vehicles', () => {
-  it('uses deterministic pagination and sorting defaults', async () => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
+  let dependencies: ReturnType<typeof createVehicleDependencies>;
+  let searchVehicles: ReturnType<typeof createSearchVehiclesSubject>;
 
+  beforeEach(() => {
+    dependencies = createVehicleDependencies();
+    searchVehicles = createSearchVehiclesSubject(dependencies);
+  });
+
+  it('uses deterministic pagination and sorting defaults', async () => {
     const result = await searchVehicles.execute({});
 
     expect(dependencies.vehicleRepository.findMany).toHaveBeenCalledOnce();
@@ -51,9 +56,6 @@ describe('search vehicles', () => {
   it.each(['make', 'model', 'category'] as const)(
     'trims the %s filter and delegates text matching to the repository',
     async (field) => {
-      const dependencies = createVehicleDependencies();
-      const searchVehicles = createSearchVehiclesSubject(dependencies);
-
       await searchVehicles.execute({ [field]: '  ToYoTa  ' });
 
       const expectedFilters = { [field]: 'ToYoTa' };
@@ -67,9 +69,6 @@ describe('search vehicles', () => {
   );
 
   it('preserves text-filter casing so the repository can apply case-insensitive matching', async () => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     await searchVehicles.execute({ make: 'tOyOtA', model: 'fOrTuNeR', category: 'sUv' });
 
     expect(dependencies.vehicleRepository.findMany).toHaveBeenCalledWith(
@@ -85,9 +84,6 @@ describe('search vehicles', () => {
   ] as const)(
     'passes a valid %s decimal filter without floating-point conversion',
     async (field, value) => {
-      const dependencies = createVehicleDependencies();
-      const searchVehicles = createSearchVehiclesSubject(dependencies);
-
       await searchVehicles.execute({ [field]: value });
 
       expect(dependencies.vehicleRepository.findMany).toHaveBeenCalledWith(
@@ -98,9 +94,6 @@ describe('search vehicles', () => {
   );
 
   it('combines minimum and maximum price filters', async () => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     await searchVehicles.execute({ minPrice: '1250000.25', maxPrice: '4500000.75' });
 
     const filters = { minPrice: '1250000.25', maxPrice: '4500000.75' };
@@ -114,9 +107,6 @@ describe('search vehicles', () => {
     ['true', true],
     ['false', false],
   ] as const)('safely parses inStock=%s as %s', async (input, expected) => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     await searchVehicles.execute({ inStock: input });
 
     expect(dependencies.vehicleRepository.findMany).toHaveBeenCalledWith(
@@ -126,9 +116,7 @@ describe('search vehicles', () => {
   });
 
   it('passes multiple filters, pagination, and sorting as one database query', async () => {
-    const dependencies = createVehicleDependencies();
     dependencies.vehicleRepository.count.mockResolvedValue(23);
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
 
     const result = await searchVehicles.execute({
       make: '  Toyota ',
@@ -161,9 +149,6 @@ describe('search vehicles', () => {
   });
 
   it('returns an empty result page when no vehicle matches', async () => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     const result = await searchVehicles.execute({ make: 'Nonexistent' });
 
     expect(result).toEqual({
@@ -173,12 +158,10 @@ describe('search vehicles', () => {
   });
 
   it('serializes matching vehicles without exposing persisted decimal or Date objects', async () => {
-    const dependencies = createVehicleDependencies();
     dependencies.vehicleRepository.findMany.mockResolvedValue([
       createPersistedVehicleFixture({ price: '3500000.55' }),
     ]);
     dependencies.vehicleRepository.count.mockResolvedValue(1);
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
 
     const result = await searchVehicles.execute({ make: 'Toyota' });
 
@@ -189,9 +172,7 @@ describe('search vehicles', () => {
   });
 
   it('supports paginating search results in the repository', async () => {
-    const dependencies = createVehicleDependencies();
     dependencies.vehicleRepository.count.mockResolvedValue(41);
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
 
     const result = await searchVehicles.execute({ page: '3', limit: '20' });
 
@@ -204,9 +185,6 @@ describe('search vehicles', () => {
   });
 
   it('rejects pagination whose database offset cannot be represented safely', async () => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     const error = await captureExpectedVehicleError(() =>
       searchVehicles.execute({ page: String(Number.MAX_SAFE_INTEGER), limit: '100' }),
     );
@@ -218,9 +196,6 @@ describe('search vehicles', () => {
   it.each(SORT_CASES)(
     'allows sorting by %s in %s order',
     async (field: VehicleSortField, order: SortOrder) => {
-      const dependencies = createVehicleDependencies();
-      const searchVehicles = createSearchVehiclesSubject(dependencies);
-
       await searchVehicles.execute({ sortBy: field, sortOrder: order });
 
       expect(dependencies.vehicleRepository.findMany).toHaveBeenCalledWith(
@@ -232,9 +207,6 @@ describe('search vehicles', () => {
   it.each(['id', 'updatedAt', 'seller', 'price; DROP TABLE Vehicle'])(
     'rejects unsupported sort field %j',
     async (sortBy) => {
-      const dependencies = createVehicleDependencies();
-      const searchVehicles = createSearchVehiclesSubject(dependencies);
-
       const error = await captureExpectedVehicleError(() => searchVehicles.execute({ sortBy }));
 
       expectValidationError(error);
@@ -245,9 +217,6 @@ describe('search vehicles', () => {
   it.each(['ascending', 'DESC', 'sideways', 'asc; DROP TABLE Vehicle'])(
     'rejects unsupported sort order %j',
     async (sortOrder) => {
-      const dependencies = createVehicleDependencies();
-      const searchVehicles = createSearchVehiclesSubject(dependencies);
-
       const error = await captureExpectedVehicleError(() => searchVehicles.execute({ sortOrder }));
 
       expectValidationError(error);
@@ -263,9 +232,6 @@ describe('search vehicles', () => {
     ['maxPrice', 'not-a-price'],
     ['maxPrice', ''],
   ] as const)('rejects invalid %s value %j', async (field, value) => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     const error = await captureExpectedVehicleError(() =>
       searchVehicles.execute({ [field]: value }),
     );
@@ -275,9 +241,6 @@ describe('search vehicles', () => {
   });
 
   it('rejects a minimum price greater than the maximum price', async () => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     const error = await captureExpectedVehicleError(() =>
       searchVehicles.execute({ minPrice: '4000000.01', maxPrice: '4000000.00' }),
     );
@@ -287,9 +250,6 @@ describe('search vehicles', () => {
   });
 
   it.each(['yes', '1', 'TRUE', 'on'])('rejects unsafe inStock value %j', async (inStock) => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     const error = await captureExpectedVehicleError(() => searchVehicles.execute({ inStock }));
 
     expectValidationError(error);
@@ -297,8 +257,6 @@ describe('search vehicles', () => {
   });
 
   it('treats SQL-like text as a literal structured filter value', async () => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
     const make = "Toyota' OR 1=1 --";
 
     await searchVehicles.execute({ make });
@@ -309,9 +267,6 @@ describe('search vehicles', () => {
   });
 
   it('rejects query parameters outside the search allowlist', async () => {
-    const dependencies = createVehicleDependencies();
-    const searchVehicles = createSearchVehiclesSubject(dependencies);
-
     const error = await captureExpectedVehicleError(() =>
       searchVehicles.execute({ make: 'Toyota', role: 'ADMIN' }),
     );

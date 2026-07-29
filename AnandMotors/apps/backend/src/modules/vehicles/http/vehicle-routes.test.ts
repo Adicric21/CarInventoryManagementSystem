@@ -166,7 +166,7 @@ describe('vehicle management routes', () => {
       });
   });
 
-  it('rejects USER and unauthenticated updates', async () => {
+  it('rejects a USER attempting to update a vehicle', async () => {
     const app = createVehicleHttpSubject(createVehicleDependencies());
 
     await request(app)
@@ -175,6 +175,11 @@ describe('vehicle management routes', () => {
       .send({ quantity: 2 })
       .expect(403)
       .expect(FORBIDDEN_RESPONSE);
+  });
+
+  it('rejects an unauthenticated user attempting to update a vehicle', async () => {
+    const app = createVehicleHttpSubject(createVehicleDependencies());
+
     await request(app)
       .put(`/api/vehicles/${VEHICLE_ID}`)
       .send({ quantity: 2 })
@@ -182,12 +187,12 @@ describe('vehicle management routes', () => {
       .expect(UNAUTHORIZED_RESPONSE);
   });
 
-  it('returns 404 for a missing vehicle and 400 for an invalid id or empty body', async () => {
-    const missingDependencies = createVehicleDependencies();
-    missingDependencies.vehicleRepository.findById.mockResolvedValue(null);
-    const missingApp = createVehicleHttpSubject(missingDependencies);
+  it('returns 404 for a missing vehicle', async () => {
+    const dependencies = createVehicleDependencies();
+    dependencies.vehicleRepository.findById.mockResolvedValue(null);
+    const app = createVehicleHttpSubject(dependencies);
 
-    await request(missingApp)
+    await request(app)
       .put(`/api/vehicles/${VEHICLE_ID}`)
       .set('Authorization', ADMIN_AUTHORIZATION)
       .send({ quantity: 2 })
@@ -195,13 +200,21 @@ describe('vehicle management routes', () => {
       .expect({
         error: { code: 'VEHICLE_NOT_FOUND', message: 'Vehicle not found.', details: {} },
       });
+  });
 
+  it('returns 400 for an invalid vehicle id', async () => {
     const app = createVehicleHttpSubject(createVehicleDependencies());
+
     await request(app)
       .put('/api/vehicles/not-a-uuid')
       .set('Authorization', ADMIN_AUTHORIZATION)
       .send({ quantity: 2 })
       .expect(400);
+  });
+
+  it('returns 400 for an empty vehicle update body', async () => {
+    const app = createVehicleHttpSubject(createVehicleDependencies());
+
     await request(app)
       .put(`/api/vehicles/${VEHICLE_ID}`)
       .set('Authorization', ADMIN_AUTHORIZATION)
